@@ -52,41 +52,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== Existing Login Form Handling (unchanged) =====
     const loginForm = document.querySelector('form[method="POST"]');
-    const errorContainer = document.getElementById('errorContainer');
+    //
 
-    const showError = (message) => {
-        errorContainer.innerHTML = `<div>${message}</div>`;
-        errorContainer.classList.remove('d-none');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    if (loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            errorContainer.classList.add('d-none');
-
-            const formData = new FormData(loginForm);
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            try {
-                const response = await fetch(loginForm.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': csrfToken
-                    }
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    window.location.href = data.redirect_url;
-                } else {
-                    showError(data.error || 'Login failed');
-                }
-            } catch (error) {
-                showError('Server connection failed');
-            }
-        });
-    }
 });

@@ -55,7 +55,7 @@
 .login-image {
     flex: 1;
     background: linear-gradient(135deg, rgba(255,75,43,0.8), rgba(255,65,108,0.8)),
-                url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0');
+                url('../img/bg_index.png');
     background-size: cover;
     background-position: center;
     display: flex;

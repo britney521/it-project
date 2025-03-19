@@ -1,0 +1,264 @@
+{% extends "Base.html" %}
+{% load static %}
+
+{% block title %}{{ restaurant.name }} - FoodFinder{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/detail.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+    <!-- Main Content -->
+    <div class="container my-4">
+        <div class="row">
+            <!-- Left Content -->
+            <div class="col-lg-8">
+                <!-- Gallery Section -->
+                <div class="gallery-container mb-4">
+                    <div class="gallery-main">
+                        <img src="{{ restaurant.photos.first.photo.url }}" class="w-100 h-100"
+                             style="object-fit: cover;" alt="Restaurant Main Image">
+                    </div>
+                    <div class="gallery-thumbnails mt-2">
+                        {% for photo in restaurant.photos.all %}
+                            <img src="{{ photo.photo.url }}" class="gallery-thumbnail"
+                                 alt="Thumbnail {{ forloop.counter }}">
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Restaurant Info -->
+                <div class="restaurant-info p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h1 class="mb-2">{{ restaurant.name }}</h1>
+                            <div class="mb-3">
+                                <span class="badge bg-primary badge-custom">{{ restaurant.restaurant_type.name }}</span>
+                                <span class="badge bg-success badge-custom">Open Now</span>
+                                <span class="badge bg-info badge-custom">$$</span>
+                            </div>
+                            <p class="text-muted">
+                                <i class="fas fa-map-marker-alt"></i> {{ restaurant.address }}
+                            </p>
+
+                            <!-- Favorite Button -->
+                            <div class="text-right">
+                                {% if is_favorited %}
+                                    <button id="favorite-button" class="btn btn-secondary"
+                                            data-restaurant-id="{{ restaurant.id }}">
+                                        <i class="fas fa-heart text-danger"></i> Collected
+                                    </button>
+                                {% else %}
+                                    <button id="favorite-button" class="btn btn-primary"
+                                            data-restaurant-id="{{ restaurant.id }}">
+                                        <i class="fas fa-heart"></i> Favorite
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="rating-large">{{ average_rating }}</div>
+                            <div class="text-muted">{{ restaurant.view_count }} reviews</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Tabs -->
+                <ul class="nav nav-tabs mb-4" id="restaurantTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="menu-tab" data-bs-toggle="tab" href="#menu">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="reviews-tab" data-bs-toggle="tab" href="#reviews">Reviews</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="restaurantTabContent">
+                    <!-- Menu Tab -->
+                    <div class="tab-pane fade show active" id="menu">
+                        <h3 class="mb-4">Popular Dishes</h3>
+                        <div class="row g-4">
+                            {% for dish in restaurant.recommended_dishes.all %}
+                                <div class="col-md-6">
+                                    <div class="card menu-item">
+                                        <img src="{{ dish.photo.url }}" class="card-img-top" alt="{{ dish.name }}">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ dish.name }}</h5>
+                                            <p class="card-text">{{ dish.description }}</p>
+                                            <p class="card-text"><strong>${{ dish.price }}</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div class="tab-pane fade" id="reviews">
+                        <div class="container my-4">
+                            <!-- Restaurant Header -->
+                            <div class="mb-4">
+                                <h1>{{ restaurant.name }}</h1>
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="#">Restaurants</a></li>
+                                        <li class="breadcrumb-item"><a
+                                                href="#">{{ restaurant.restaurant_type.name }}</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Reviews</li>
+                                    </ol>
+                                </nav>
+                            </div>
+
+                            <div class="row">
+                                <!-- Left Column - Rating Summary -->
+                                <div class="col-lg-4">
+                                    <div class="rating-box mb-4">
+                                        <div class="text-center mb-3">
+                                            <div class="rating-large">{{ average_rating }}
+                                            </div>
+                                            <div class="star-rating mb-2">
+                                                {% for i in rating_range %}
+                                                    {% if i <= average_rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <div class="text-muted">Based on {{ restaurant.view_count }} reviews</div>
+                                        </div>
+
+                                        <div class="rating-bars">
+                                            {% for score in rating_counts %}
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <span class="me-2">{{ score.score }}</span>
+                                                    <div class="rating-bar flex-grow-1">
+                                                        <div class="rating-fill"
+                                                             style="width: {{ score.percent }}%"></div>
+                                                    </div>
+                                                    <span class="ms-2">{{ score.count }}</span>
+                                                </div>
+                                            {% endfor %}
+
+                                        </div>
+                                    </div>
+
+                                    <form method="POST" action="{% url 'RateRestaurant' restaurant.id %}">
+                                        {% csrf_token %}
+                                        <div class="star-rating mb-2">
+                                            <input type="hidden" name="score" id="scoreInput" value="0">
+                                            <i class="far fa-star star" data-score="1"></i>
+                                            <i class="far fa-star star" data-score="2"></i>
+                                            <i class="far fa-star star" data-score="3"></i>
+                                            <i class="far fa-star star" data-score="4"></i>
+                                            <i class="far fa-star star" data-score="5"></i>
+                                        </div>
+                                        <button type="submit" class="btn write-review-btn text-white w-100 mb-4">
+                                            <i class="fas fa-pencil-alt me-2"></i>Submit Rating
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Right Column - Reviews List -->
+                                <div class="col-lg-8">
+
+                                    {% for comment in comments %}
+                                        <!-- Review Cards -->
+                                        <div class="review-card card p-4 mb-4">
+                                            <div class="review-header">
+                                                <img src="{{ comment.user.avatar.url }}" class="review-avatar"
+                                                     alt="User Avatar">
+                                                <div>
+                                                    <h5 class="mb-1">{{ comment.user.username }}</h5>
+                                                    <div class="text-muted">
+                                                        <small>{{ comment.created_at|date:'Y-m-d H:i:s' }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p>{{ comment.content }}</p>
+
+                                        </div>
+                                    {% endfor %}
+
+                                    <!-- Comment Form -->
+                                    <div id="commentFormContainer" style="display: none;">
+                                        <form method="POST" action="{% url 'SubmitComment' restaurant.id %}">
+                                            {% csrf_token %}
+                                            <div class="mb-3">
+                                                <textarea class="form-control" name="content" rows="3"
+                                                          placeholder="Write your review here..."></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-success">Submit Review</button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Comment Button -->
+                                    <div class="text-center mt-4">
+                                        <button id="toggleCommentForm" class="btn btn-primary">Write a Review</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="col-lg-4">
+                <div class="card side-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Make a Reservation</h5>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Time</label>
+                                <select class="form-select">
+                                    <option>6:00 PM</option>
+                                    <option>7:00 PM</option>
+                                    <option>8:00 PM</option>
+                                    <option>9:00 PM</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Party Size</label>
+                                <select class="form-select">
+                                    <option>2 people</option>
+                                    <option>3 people</option>
+                                    <option>4 people</option>
+                                    <option>5+ people</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Book Now</button>
+                        </form>
+
+                        <hr>
+
+                        <h5 class="card-title">Restaurant Hours</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">Mon-Fri: 11:00 AM - 10:00 PM</li>
+                            <li class="mb-2">Sat: 10:00 AM - 11:00 PM</li>
+                            <li>Sun: 10:00 AM - 9:00 PM</li>
+                        </ul>
+
+                        <hr>
+
+                        <h5 class="card-title">Contact</h5>
+                        <p><i class="fas fa-phone me-2"></i> {{ restaurant.phone }}</p>
+                        <p><i class="fas fa-envelope me-2"></i> info@italianparadise.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/detail.js' %}"></script>
+
+{% endblock %}
