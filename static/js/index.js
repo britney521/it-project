@@ -1,51 +1,58 @@
- // 统一使用sessionStorage
-              const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+// 统一使用sessionStorage
+const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
 
 
-              // 更新登出功能
-              function logout() {
-                sessionStorage.removeItem('isLoggedIn');
-                document.body.style.opacity = '0';
-                setTimeout(() => {
-                    window.location.href = 'homepage.html';
-                    window.location.reload(true);
-                }, 500);
-            }
+// 更新登出功能
+function logout() {
+    sessionStorage.removeItem('isLoggedIn');
+    document.body.style.opacity = '0';
+    setTimeout(() => {
+        window.location.href = 'homepage.html';
+        window.location.reload(true);
+    }, 500);
+}
 
 
+const loginLink = document.querySelector('.navbar .nav-item:nth-last-child(3) .nav-link');
+loginLink.addEventListener('click', () => {
+    window.location.href = 'Modern Login Page.html';
+});
+// 获取 dropdown-toggle 元素
+const dropdownToggle = document.querySelector('.dropdown-toggle');
 
-              const loginLink = document.querySelector('.navbar .nav-item:nth-last-child(3) .nav-link');
-     loginLink.addEventListener('click', () => {
-       window.location.href = 'Modern Login Page.html';
-     });
-
-     // 在下拉菜单显示时添加箭头动画
-     document.querySelector('.dropdown-toggle').addEventListener('show.bs.dropdown', () => {
-         document.querySelector('.dropdown-toggle').style.transform = 'rotate(180deg)';
-     });
-
-     document.querySelector('.dropdown-toggle').addEventListener('hide.bs.dropdown', () => {
-         document.querySelector('.dropdown-toggle').style.transform = 'rotate(0deg)';
-     });
-
-
-     document.addEventListener("DOMContentLoaded", function() {
-        const dropdowns = document.querySelectorAll(".dropdown");
-
-        dropdowns.forEach(function(dropdown) {
-            dropdown.addEventListener("show.bs.dropdown", function() {
-                let menu = dropdown.querySelector(".dropdown-menu");
-                menu.classList.add("show");
-            });
-
-            dropdown.addEventListener("hide.bs.dropdown", function() {
-                let menu = dropdown.querySelector(".dropdown-menu");
-                menu.classList.remove("show");
-            });
-        });
+// 检查元素是否存在
+if (dropdownToggle) {
+    // 添加 show.bs.dropdown 事件监听器
+    dropdownToggle.addEventListener('show.bs.dropdown', () => {
+        dropdownToggle.style.transform = 'rotate(180deg)';
     });
 
-     document.getElementById("searchForm").addEventListener("submit", function(event) {
+    // 添加 hide.bs.dropdown 事件监听器
+    dropdownToggle.addEventListener('hide.bs.dropdown', () => {
+        dropdownToggle.style.transform = 'rotate(0deg)';
+    });
+} else {
+    console.warn('Dropdown toggle element not found.');
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const dropdowns = document.querySelectorAll(".dropdown");
+
+    dropdowns.forEach(function (dropdown) {
+        dropdown.addEventListener("show.bs.dropdown", function () {
+            let menu = dropdown.querySelector(".dropdown-menu");
+            menu.classList.add("show");
+        });
+
+        dropdown.addEventListener("hide.bs.dropdown", function () {
+            let menu = dropdown.querySelector(".dropdown-menu");
+            menu.classList.remove("show");
+        });
+    });
+});
+
+document.getElementById("searchForm").addEventListener("submit", function (event) {
     var searchInput = document.querySelector("input[name='search']").value.trim();
     if (searchInput === "") {
         event.preventDefault();
@@ -54,12 +61,11 @@
 });
 
 
-
-     document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.querySelector("input[name='search']");
     const suggestions = ["burger", "ramen", "sushi", "pasta", "pizza", "american", "japanese", "italian", "mexican"];
 
-    searchInput.addEventListener("input", function() {
+    searchInput.addEventListener("input", function () {
         const inputText = searchInput.value.toLowerCase();
         let suggestionBox = document.getElementById("suggestionBox");
         if (!suggestionBox) {
@@ -75,7 +81,7 @@
                 let div = document.createElement("div");
                 div.classList.add("suggestion-item");
                 div.textContent = suggestion;
-                div.addEventListener("click", function() {
+                div.addEventListener("click", function () {
                     searchInput.value = suggestion;
                     suggestionBox.innerHTML = "";
                 });
@@ -84,7 +90,7 @@
         }
     });
 
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
         if (!searchInput.contains(e.target) && !document.getElementById("suggestionBox").contains(e.target)) {
             document.getElementById("suggestionBox").innerHTML = "";
         }
@@ -92,11 +98,11 @@
 });
 
 
-     document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.querySelector("input[name='search']");
     const suggestions = ["burger", "ramen", "sushi", "pasta", "pizza", "tacos", "curry", "bbq", "salad", "pho", "noodles", "dumplings"];
 
-    searchInput.addEventListener("input", function() {
+    searchInput.addEventListener("input", function () {
         const inputText = searchInput.value.toLowerCase();
         let suggestionBox = document.getElementById("suggestionBox");
 
@@ -115,7 +121,7 @@
                 let div = document.createElement("div");
                 div.classList.add("suggestion-item");
                 div.textContent = suggestion;
-                div.addEventListener("click", function() {
+                div.addEventListener("click", function () {
                     searchInput.value = suggestion;
                     suggestionBox.innerHTML = "";
                 });
@@ -124,7 +130,7 @@
         }
     });
 
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
         if (!searchInput.contains(e.target) && suggestionBox && !suggestionBox.contains(e.target)) {
             suggestionBox.innerHTML = "";
         }
@@ -132,8 +138,8 @@
 });
 
 
-     // 替换现有的搜索功能代码
-document.addEventListener("DOMContentLoaded", function() {
+// 替换现有的搜索功能代码
+document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     const suggestionBox = document.getElementById("suggestionBox");
     const suggestions = [
@@ -145,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function() {
         "Vegetarian", "Seafood", "BBQ", "Noodle Shop"
     ];
 
-    searchInput.addEventListener("input", function() {
+    searchInput.addEventListener("input", function () {
         const inputText = this.value.trim();
         suggestionBox.innerHTML = "";
 
@@ -171,14 +177,14 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // 点击页面其他区域关闭建议框
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
         if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
             suggestionBox.innerHTML = "";
         }
     });
 
     // 表单提交验证
-    document.getElementById("searchForm").addEventListener("submit", function(e) {
+    document.getElementById("searchForm").addEventListener("submit", function (e) {
         if (searchInput.value.trim() === "") {
             e.preventDefault();
             searchInput.focus();
