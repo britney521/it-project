@@ -2,7 +2,7 @@
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/bg_index.png');
 background-size: cover; /* 确保图片覆盖整个区域 */
   background-repeat: no-repeat; /* 防止图片重复 */
-  height: 80vh;
+  height: 70vh;
   display: flex;
   align-items: center;
   color: white;

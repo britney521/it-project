@@ -24,7 +24,7 @@ def homepage(request):
     Display the homepage with restaurant types.
     """
     data = RestaurantType.objects.all()
-    return render(request, 'Homepage.html', {'data': data})
+    return render(request, 'HomePage.html', {'data': data})
 
 
 def login_page(request):
