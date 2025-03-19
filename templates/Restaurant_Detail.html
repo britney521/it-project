@@ -18,12 +18,12 @@
                 <div class="gallery-container mb-4">
                     <div class="gallery-main">
                         <img src="{{ restaurant.photos.first.photo.url }}" class="w-100 h-100"
-                             style="object-fit: cover;" alt="Restaurant Main Image">
+                             style="object-fit: cover;" alt="Restaurant Main Image" loading="lazy" decoding="async">
                     </div>
                     <div class="gallery-thumbnails mt-2">
                         {% for photo in restaurant.photos.all %}
                             <img src="{{ photo.photo.url }}" class="gallery-thumbnail"
-                                 alt="Thumbnail {{ forloop.counter }}">
+                                 alt="Thumbnail {{ forloop.counter }}" loading="lazy" decoding="async">
                         {% endfor %}
                     </div>
                 </div>
@@ -140,10 +140,8 @@
                                                     <span class="ms-2">{{ score.count }}</span>
                                                 </div>
                                             {% endfor %}
-
                                         </div>
                                     </div>
-
                                     <form method="POST" action="{% url 'RateRestaurant' restaurant.id %}">
                                         {% csrf_token %}
                                         <div class="star-rating mb-2">
@@ -154,9 +152,15 @@
                                             <i class="far fa-star star" data-score="4"></i>
                                             <i class="far fa-star star" data-score="5"></i>
                                         </div>
+                                        {% if request.user.is_authenticated %}
                                         <button type="submit" class="btn write-review-btn text-white w-100 mb-4">
                                             <i class="fas fa-pencil-alt me-2"></i>Submit Rating
                                         </button>
+                                        {% else %}
+                                        <button type="button" class="btn write-review-btn text-white w-100 mb-4">
+                                            Please log in first to rate
+                                        </button>
+                                        {% endif %}
                                     </form>
                                 </div>
 
@@ -195,14 +199,16 @@
 
                                     <!-- Comment Button -->
                                     <div class="text-center mt-4">
-                                        <button id="toggleCommentForm" class="btn btn-primary">Write a Review</button>
+                                         {% if request.user.is_authenticated %}
+                                            <button id="toggleCommentForm" class="btn btn-primary">Write a Review</button>
+                                                 {% else %}
+                                            <button  class="btn btn-primary">Please log in first to leave a comment</button>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
                 </div>
             </div>
 
@@ -256,6 +262,16 @@
             </div>
         </div>
     </div>
+
+    <!-- 在</body>标签前添加以下代码 -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent border-0">
+      <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+      <img id="zoomedImage" class="img-fluid" src="" alt="放大图片" style="max-height: 90vh;">
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

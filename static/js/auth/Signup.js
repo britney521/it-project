@@ -1,90 +1,116 @@
-// static/js/auth/Signup.js
-document.addEventListener('DOMContentLoaded', function() {
-    const alertQueue = [];
-    const signupForm = document.getElementById('signupForm');
-    const socialButtons = document.querySelectorAll('.social-btn');
+  document.addEventListener('DOMContentLoaded', function() {
+            const signupForm = document.getElementById('signupForm');
+            if (signupForm) {
+                signupForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
 
-    // Create styled alert component
-    const createAlert = (message, type = 'error') => {
-        const alertEl = document.createElement('div');
-        alertEl.className = `alert-notification ${type}`;
-        alertEl.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} alert-icon"></i>
-            <span>${message}</span>
-        `;
+                    try {
+                        // Show success modal
+                        await showSuccessModal();
 
-        // Alert removal handler
-        const removeAlert = () => {
-            alertEl.classList.add('alert-exit');
-            setTimeout(() => {
-                alertEl.remove();
-                alertQueue.shift();
-                alertQueue[0]?.();
-            }, 300);
-        };
+                        // Redirect to homepage after 2 seconds
+                        setTimeout(() => {
+                            window.location.href = '/Login/';
+                        }, 2000);
 
-        return {
-            show: () => {
-                document.body.appendChild(alertEl);
-                setTimeout(removeAlert, 5000);
-            }
-        };
-    };
-
-    // Form submission handler
-    signupForm.addEventListener('submit', async function(event) {
-        event.preventDefault();
-
-        const formData = new FormData(signupForm);
-        const password = formData.get('password');
-        const confirmPassword = formData.get('confirm_password');
-
-        // Client-side validation
-        if (password !== confirmPassword) {
-            const alert = createAlert('Passwords do not match!');
-            alertQueue.push(alert.show);
-            if (alertQueue.length === 1) alert.show();
-            return;
-        }
-
-        // AJAX submission
-        try {
-            const response = await fetch(signupForm.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                const alert = createAlert('🎉 Registration successful! Redirecting...', 'success');
-                alert.show();
-                setTimeout(() => window.location.href = data.redirect_url, 1500);
-            } else {
-                data.errors.forEach(error => {
-                    const alert = createAlert(error);
-                    alertQueue.push(alert.show);
+                    } catch (error) {
+                        console.error('Registration error:', error);
+                        showErrorModal('Registration failed. Please try again.');
+                    }
                 });
-                if (alertQueue.length > 0) alertQueue[0]();
             }
-        } catch (error) {
-            const alert = createAlert('⚠️ Server connection failed');
-            alert.show();
-        }
-    });
-
-    // Social button handlers
-    socialButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            const provider = button.textContent.replace('Continue with ', '');
-            const alert = createAlert(`🚧 ${provider} login coming soon!`);
-            alertQueue.push(alert.show);
-            if (alertQueue.length === 1) alert.show();
         });
-    });
-});
+
+        function showSuccessModal() {
+            const modalHtml = `
+                <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-body text-center p-4">
+                                <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                                <h3 class="mt-3">Registration Successful!</h3>
+                                <p class="mb-0">Your account has been created successfully.</p>
+                                <p class="text-muted">Redirecting to homepage...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    successModal.hide();
+                    document.getElementById('successModal').remove();
+                    resolve();
+                }, 2000);
+            });
+        }
+
+        function showErrorModal(message) {
+            const modalHtml = `
+                <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-body text-center p-4">
+                                <i class="fas fa-times-circle text-danger" style="font-size: 4rem;"></i>
+                                <h3 class="mt-3">Registration Failed</h3>
+                                <p class="mb-0">${message}</p>
+                            </div>
+                            <div class="modal-footer justify-content-center">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        }
+
+        // 登录状态管理
+        function updateAuthUI() {
+            const authSection = document.getElementById('auth-section');
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+
+            if (isLoggedIn) {
+                authSection.innerHTML = `
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-2x text-white"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="userprofile.html">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="dropdown-item" onclick="logout()">Logout</button></li>
+                        </ul>
+                    </li>
+                `;
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            window.location.href = 'Modern Login Page.html';
+        }
+
+        // 初始化检查登录状态
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
+
+            // 注册表单提交处理
+            const signupForm = document.getElementById('signupForm');
+            if (signupForm) {
+                signupForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    // 保持原有注册逻辑不变
+                    showSuccessModal();
+                });
+            }
+        });

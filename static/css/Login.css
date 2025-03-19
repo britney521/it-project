@@ -142,6 +142,7 @@
     animation: pulse 2s infinite;
 }
 
+
 .login-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(255,75,43,0.3);
@@ -214,4 +215,13 @@ footer {
         opacity: 0;
         transform: translateX(-50%) translateY(-15px);
     }
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #FF4B2B, #FF416C, #4158D0, #23D5AB);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    display: flex;
+    flex-direction: column;
 }

@@ -197,8 +197,12 @@ def restaurant_detail(request, restaurant_id):
     restaurant.view_count += 1
     restaurant.save()
 
+    if request.user.is_authenticated:
     # Check if the user has favorited this restaurant
-    is_favorited = Favorite.objects.filter(user=request.user, restaurant=restaurant).exists()
+        is_favorited = Favorite.objects.filter(user=request.user, restaurant=restaurant).exists()
+
+    else:
+        is_favorited = None
 
     # Get comments
     comments = restaurant.comments.all().order_by('-created_at')
@@ -225,7 +229,7 @@ def restaurant_detail(request, restaurant_id):
         'average_rating': round(average_rating, 1) if average_rating else 0,
         'rating_range': rating_range,
         'comments': comments,
-        'is_favorited': is_favorited,  # Whether it has been favorited
+        'is_favorited':is_favorited if is_favorited else None,  # Whether it has been favorited
     }
     return render(request, 'Restaurant_Detail.html', context)
 

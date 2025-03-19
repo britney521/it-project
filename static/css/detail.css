@@ -191,3 +191,15 @@
     .star-rating {
       color: #ffc107;
     }
+    /* 添加模态框样式 */
+#imageModal .modal-content {
+  background: rgba(0,0,0,0.9);
+}
+
+#imageModal img {
+  margin: auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+

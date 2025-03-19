@@ -39,3 +39,31 @@
  $('#toggleCommentForm').click(function() {
             $('#commentFormContainer').toggle();
         });
+
+ // 添加图片点击事件监听
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.gallery-main img, .gallery-thumbnail, .card-img-top').forEach(img => {
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', function() {
+            const modalImg = document.getElementById('zoomedImage');
+            modalImg.src = this.src;
+            new bootstrap.Modal(document.getElementById('imageModal')).show();
+        });
+    });
+});
+
+// 评分动画 (4.8动态增长效果)
+    const ratingElement = document.querySelector(".rating-large");
+    let rating = 0.0;
+    let finalRating = parseFloat(ratingElement.textContent);
+    ratingElement.textContent = "0.0";
+
+    const interval = setInterval(() => {
+        if (rating < finalRating) {
+            rating += 0.1;
+            ratingElement.textContent = rating.toFixed(1);
+        } else {
+            ratingElement.textContent = finalRating.toFixed(1);
+            clearInterval(interval);
+        }
+    }, 50);
